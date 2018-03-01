@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>API</title>
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+    <style>
+        .input-group>.custom-select:not(:first-child), .input-group>.form-control:not(:first-child) {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            left: -23px;
+            margin-right: -23px;
+    }
+       .container-fluid{
+            background: url("https://mdbootstrap.com/img/Photos/Others/architecture.jpg")no-repeat center center;
+            background-size: cover;
+            height: 1400px;
+       }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row content">
+        <nav class="navbar navbar-light bg-faded">
+            <strong><h1 class="display-3 mb-0">Json Placeholder API</h1></strong>
+        </nav>
+        <hr>
+        <div class="col-sm-9">
+            <h3><strong>Post by ID</strong></h3>
+            <hr>
+            <div class="d-flex">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <button class="btn btn-success mr-4" id="getPost">Get Post</button>
+                    </div>
+                    <input  class="form-control" type="text" id="postID" placeholder="ID" aria-label="" aria-describedby="basic-addon1" >
+                </div>
+            </div>
+            <hr>
+            <div id="post"></div>
+            <hr>
+            <br>
+            <h3><strong>Users</strong></h3>
+            <hr>
+            <div class="d-flex">
+                <button class="btn btn-primary mr-4" id="getUser">Get Users</button>
+            </div>
+            <hr>
+            <div id="user"></div>
+            <hr>
+        </div>
+
+        <div class="col-sm-3 sidenav">
+            <form id="addPost">
+                <h3 class="mt-15"><strong>Add Post</strong></h3>
+                <hr>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="title" placeholder="Title">
+                </div>
+                <div class="form-group">
+                    <textarea id="body" class="form-control" placeholder="Body"></textarea>
+                </div>
+                <input type="submit"class="btn btn-secondary"
+                       value="Create Post">
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+
+    document.getElementById('getPost').addEventListener('click', getPost);
+    document.getElementById('getUser').addEventListener('click', getUser);
+    document.getElementById('addPost').addEventListener('submit', addPost);
+
+    function getPost() {
+        let nekiID = document.getElementById('postID').value;
+        fetch('https://jsonplaceholder.typicode.com/posts/' + nekiID)
+            .then(response => response.json())
+            .then(data => {
+                let out = `<h2>Post ${nekiID}</h2>`;
+                out += `
+                    <ul class="list-group">
+                    <li class="list-group-item">ID: ${data.id}</li>
+                    <li class="list-group-item">Title: ${data.title}</li>
+                    <li class="list-group-item">Body: ${data.body}</li>
+                    </ul>`;
+                document.getElementById('post').innerHTML = out;
+            })
+    }
+
+    function getUser() {
+        fetch('https://jsonplaceholder.typicode.com/users')
+            .then(response => response.json())
+            .then(data => {
+                let output = '<h2>Users</h2>';
+
+                output =
+                    `<table class="table">
+                      <thead class="thead-light">
+                        <tr>
+                          <th scope="col">ID</th>
+                          <th scope="col">Name</th>
+                          <th scope="col">Username</th>
+                          <th scope="col">Email</th>
+                          <th scope="col">Phone</th>
+                          <th scope="col">Website</th>
+                          <th scope="col">Update</th>
+                          <th scope="col">Delete</th>
+                        </tr>
+                      </thead>
+                      <tbody>`;
+
+                data.forEach(function (user) {
+                    output +=
+                        `<tr>
+                          <th scope="row">${user.id}</th>
+                          <td>${user.name}</td>
+                          <td>${user.username}</td>
+                          <td>${user.email}</td>
+                          <td>${user.phone}</td>
+                          <td>${user.website}</td>
+                          <td><button type="button" class="btn btn-warning">Update</button></td>
+                          <td><button type="button" class="btn btn-danger">Delete</button></td>
+                        </tr>`;
+                });
+                output += `</tbody></table>`;
+                document.getElementById('user').innerHTML = output;
+
+            })
+    }
+    function addPost(e) {
+        e.preventDefault();
+
+        let title = document.getElementById('title').value;
+        let body = document.getElementById('body').value;
+
+        fetch('https://jsonplaceholder.typicode.com/posts',{
+            method: 'POST',
+            headers:{
+                'Accept':'application/json, text/plain, */*',
+                'Content-type':'application/json'
+            },
+            body:JSON.stringify({title:title, body:body})
+        })
+            .then((res) => res.json())
+            .then((data) => console.log(data))
+        
+    }
+</script>
+
+</body>
+</html>
